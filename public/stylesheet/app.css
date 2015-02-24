@@ -1,0 +1,8 @@
+.centered {
+  display : block;
+  margin : 0 auto;
+}
+
+#google-signin {
+  margin-top : 1em;
+}
