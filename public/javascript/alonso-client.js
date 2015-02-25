@@ -105,7 +105,105 @@
     }
   });
   
-  React.render(React.createElement(BlogList, {data: aapi.blogs.read()}) , document.getElementById('blog-list')); 
+  var Previous = React.createClass({displayName: "Previous",
+    handleClick : function(e) {
+      e.preventDefault();
+      this.props.onClick();
+    },
+    render : function() {
+      var className = this.props.className + ' pull-left';
+      return (
+        React.createElement("li", {className: className}, React.createElement("a", {href: "#", onClick: this.handleClick}, "Previous"))
+      );
+    }
+  });
+  
+  var Next = React.createClass({displayName: "Next",
+    handleClick : function(e) {
+      e.preventDefault();
+      this.props.onClick();
+    },
+    render : function() {
+      var className = this.props.className + ' pull-right';
+      return (
+        React.createElement("li", {className: className}, React.createElement("a", {href: "#", onClick: this.handleClick}, "Next"))
+      );
+    }
+  });
+  
+  var Pager = React.createClass({displayName: "Pager",
+    render : function() {
+      var previousEl = React.createElement(Previous, {onClick: this.props.onPrevious, className: "show"}),
+          nextEl = React.createElement(Next, {onClick: this.props.onNext, className: "show"});
+      switch (this.props.index) {
+        case 1:
+          previousEl = React.createElement(Previous, {onClick: this.props.onPrevious, className: "hidden"});
+        break;
+        case this.props.totalPages:
+          nextEl = React.createElement(Next, {onClick: this.props.onNext, className: "hidden"});
+        break;
+      }
+      console.log('Page: ' + this.props.index);
+      return (
+        React.createElement("div", {className: "blogpagination-pager"}, 
+          React.createElement("nav", null, 
+            React.createElement("ul", {className: "pager"}, 
+              previousEl, 
+              nextEl
+            )
+          )
+        )
+      );
+    }
+  });
+  
+  var BlogPagination = React.createClass({displayName: "BlogPagination",
+    showPage : function(pageIndex) {
+      var aux = 0,
+          start = 0,
+          end = 0;
+      if (pageIndex > 1) {
+        aux = pageIndex - 1;
+      }
+      start = this.props.limit * aux;
+      end = start + this.props.limit;
+      return this.props.data.slice(start , end);
+    },
+    getInitialState : function() {
+      return {
+        pageIndex : 1
+      };
+    },
+    onPrevious : function() {
+      console.log('previous page: ' + (this.state.pageIndex - 1));
+      this.setState({
+        pageIndex : this.state.pageIndex - 1
+      });
+    },
+    onNext : function() {
+      console.log('next page: ' + (this.state.pageIndex + 1));
+      this.setState({
+        pageIndex : this.state.pageIndex + 1
+      });
+    },
+    getTotalPages : function() {
+      var pages = this.props.data.length/this.props.limit,
+          roundedPages = (pages > Math.round(pages)) ? Math.round(pages) + 1 : Math.round(pages); 
+      return roundedPages;
+    },
+    render : function() {
+      var totalPages = this.getTotalPages();
+      return (
+        React.createElement("div", {className: "blogPagination"}, 
+          React.createElement(Pager, {index: this.state.pageIndex, totalPages: totalPages, onPrevious: this.onPrevious, onNext: this.onNext}), 
+          React.createElement(BlogList, {data: this.showPage(this.state.pageIndex)}), 
+          React.createElement(Pager, {index: this.state.pageIndex, totalPages: totalPages, onPrevious: this.onPrevious, onNext: this.onNext})
+        )
+      );
+    }
+  });
+  
+  React.render(React.createElement(BlogPagination, {data: aapi.blogs.read(), limit: 2}) , document.getElementById('blog-pagination')); 
   
 }(window.myLib.React , window.myLib.moment , window.myLib.aapi));
 (function(React , gapi) {

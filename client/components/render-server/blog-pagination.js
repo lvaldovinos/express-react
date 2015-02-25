@@ -39,43 +39,100 @@ var React = require('react'),
     }
   });
   
+  var Previous = React.createClass({
+    handleClick : function(e) {
+      e.preventDefault();
+      this.props.onClick();
+    },
+    render : function() {
+      var className = this.props.className + ' pull-left';
+      return (
+        <li className={className}><a href="#" onClick={this.handleClick}>Previous</a></li>
+      );
+    }
+  });
+  
+  var Next = React.createClass({
+    handleClick : function(e) {
+      e.preventDefault();
+      this.props.onClick();
+    },
+    render : function() {
+      var className = this.props.className + ' pull-right';
+      return (
+        <li className={className}><a href="#" onClick={this.handleClick}>Next</a></li>
+      );
+    }
+  });
+  
   var Pager = React.createClass({
     render : function() {
-      var totalPages = this.props.count/this.props.limitPage,
-          roundedPages = ( totalPages > Math.round(totalPages) ) ? Math.round(totalPages) + 1 : Math.round(totalPages),
-          i = 1,
-          liElements = [];
-          console.log('Total pages to render: ' + roundedPages);
-      for (i ; i <= roundedPages ; i += 1) {
-        if (this.props.index === i) {
-          liElements.push(<Page id={i} isActive=true>);
-        }
-        else {
-          liElements.push(<Page id={i} isActive=false>);
-        }
+      var previousEl = <Previous onClick={this.props.onPrevious} className="show"/>,
+          nextEl = <Next onClick={this.props.onNext} className="show"/>;
+      switch (this.props.index) {
+        case 1:
+          previousEl = <Previous onClick={this.props.onPrevious} className="hidden"/>;
+        break;
+        case this.props.totalPages:
+          nextEl = <Next onClick={this.props.onNext} className="hidden"/>;
+        break;
       }
+      console.log('Page: ' + this.props.index);
       return (
-        <nav>
-          <ul className="pagination">
-            <Previous />
-            {liElements}
-            <Next />
-          </ul>
-        </nav>
-        {liElements}
+        <div className="blogpagination-pager">
+          <nav>
+            <ul className="pager">
+              {previousEl}
+              {nextEl}
+            </ul>
+          </nav>
+        </div>
       );
     }
   });
   
   var BlogPagination = React.createClass({
+    showPage : function(pageIndex) {
+      var aux = 0,
+          start = 0,
+          end = 0;
+      if (pageIndex > 1) {
+        aux = pageIndex - 1;
+      }
+      start = this.props.limit * aux;
+      end = start + this.props.limit;
+      return this.props.data.slice(start , end);
+    },
     getInitialState : function() {
       return {
         pageIndex : 1
       };
     },
+    onPrevious : function() {
+      console.log('previous page: ' + (this.state.pageIndex - 1));
+      this.setState({
+        pageIndex : this.state.pageIndex - 1
+      });
+    },
+    onNext : function() {
+      console.log('next page: ' + (this.state.pageIndex + 1));
+      this.setState({
+        pageIndex : this.state.pageIndex + 1
+      });
+    },
+    getTotalPages : function() {
+      var pages = this.props.data.length/this.props.limit,
+          roundedPages = (pages > Math.round(pages)) ? Math.round(pages) + 1 : Math.round(pages); 
+      return roundedPages;
+    },
     render : function() {
+      var totalPages = this.getTotalPages();
       return (
-        <Pager index={this.state.pageIndex} count={this.props.data.length} limitPage=2/>
+        <div className="blogPagination">
+          <Pager index={this.state.pageIndex} totalPages={totalPages} onPrevious={this.onPrevious} onNext={this.onNext} />
+          <BlogList data={this.showPage(this.state.pageIndex)} />
+          <Pager index={this.state.pageIndex} totalPages={totalPages} onPrevious={this.onPrevious} onNext={this.onNext} />
+        </div>
       );
     }
   });
