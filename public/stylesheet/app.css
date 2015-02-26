@@ -1,8 +1,46 @@
-.centered {
-  display : block;
-  margin : 0 auto;
+#header-container h1{
+  font-family: 'Lora', serif;
+}
+
+#header-container p {
+  font-family: 'Shadows Into Light', cursive;
+}
+
+#body-container #left-container img.img-responsive {
+  border: 2px solid #C4BBBB;
+  width: 200px;
+  height: 200px;
 }
 
 #google-signin {
   margin-top : 1em;
 }
+
+#footer-info {
+  margin-bottom : 1em;
+  padding : 1em 0em 1em 0em;
+  background-color : #6A1919;
+}
+
+#footer-info a,
+#footer-info address {
+  color : #FCEDED;
+}
+
+#footer-info h4,
+#footer-info h5,
+#footer-info i {
+  color : #C4BBBB;
+}
+
+#footer-info address #company-phone {
+  margin-top : 2em;
+  background-color : #FFFFFF;
+  width : 160px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  padding: 0.5em 0.5em 0.5em 1em;
+  border : 2px solid #4B1313;
+}
+
