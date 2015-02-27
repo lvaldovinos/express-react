@@ -3,20 +3,22 @@
     render : function() {
       var name = this.props.name,
           createdDate = moment(this.props.createdDate).format('MMMM DD, YYYY'),
-          body = this.props.children;
+          body = this.props.children,
+          viewFull = '/' + this.props.id;;
       //shorten body..
       return (
-        <div className="shortBlog">
-          <div>
-            <h5>{name}</h5>
-            <div className="blog-date">
+        <div className="shortBlog clearfix">
+          <h5>{name}</h5>
+          <div className="clearfix">
+            <div className="blog-date pull-left">
               <i>{createdDate}</i>
             </div>
           </div>
-          <div>
-            <small>
-              <span dangerouslySetInnerHTML={{__html : body}} />
-            </small>
+          <small>
+            <span dangerouslySetInnerHTML={{__html : body}} />
+          </small>
+          <div className="pull-right">
+            <a href={viewFull}>View full page</a>
           </div>
         </div>
       );
@@ -27,7 +29,7 @@
     render : function() {
       var shortenBlogs = this.props.data.map(function(blog) {
         return (
-          <ShortBlog name={blog.name} createdDate={blog.createdDate}>
+          <ShortBlog name={blog.name} createdDate={blog.createdDate} id={blog._id}>
             {blog.shortBody}
           </ShortBlog>
         );
@@ -74,19 +76,25 @@
     render : function() {
       var name = this.props.name,
           createdDate = moment(this.props.createdDate).format('MMMM DD, YYYY'),
-          body = this.props.children;
+          body = this.props.children,
+          viewFull = '/' + this.props.id;
         
       return (
         <div className="blog">
-          <div>
-            <h2>{name}</h2>
-            <div className="blog-date">
-              <i>{createdDate}</i>
+            <div className="row">
+              <h2>{name}</h2>
             </div>
-            <div>
+            <div className="row">
+              <div className="blog-date pull-left">
+                <i>{createdDate}</i>
+              </div>
+              <div className="pull-right">
+                <a href={viewFull}>View full page</a>
+              </div>
+            </div>
+            <div className="row">
               <span dangerouslySetInnerHTML={{__html: body}} />
             </div>
-          </div>
         </div>
       );
     }
@@ -96,7 +104,7 @@
     render : function() {
       var blogNodes = this.props.data.map(function(blog) {
         return (
-          <Blog name={blog.name} createdDate={blog.createdDate}>
+          <Blog name={blog.name} createdDate={blog.createdDate} id={blog._id}>
             {blog.body}
           </Blog>
         );

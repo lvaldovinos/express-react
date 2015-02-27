@@ -3,20 +3,22 @@
     render : function() {
       var name = this.props.name,
           createdDate = moment(this.props.createdDate).format('MMMM DD, YYYY'),
-          body = this.props.children;
+          body = this.props.children,
+          viewFull = '/' + this.props.id;;
       //shorten body..
       return (
-        React.createElement("div", {className: "shortBlog"}, 
-          React.createElement("div", null, 
-            React.createElement("h5", null, name), 
-            React.createElement("div", {className: "blog-date"}, 
+        React.createElement("div", {className: "shortBlog clearfix"}, 
+          React.createElement("h5", null, name), 
+          React.createElement("div", {className: "clearfix"}, 
+            React.createElement("div", {className: "blog-date pull-left"}, 
               React.createElement("i", null, createdDate)
             )
           ), 
-          React.createElement("div", null, 
-            React.createElement("small", null, 
-              React.createElement("span", {dangerouslySetInnerHTML: {__html : body}})
-            )
+          React.createElement("small", null, 
+            React.createElement("span", {dangerouslySetInnerHTML: {__html : body}})
+          ), 
+          React.createElement("div", {className: "pull-right"}, 
+            React.createElement("a", {href: viewFull}, "View full page")
           )
         )
       );
@@ -27,7 +29,7 @@
     render : function() {
       var shortenBlogs = this.props.data.map(function(blog) {
         return (
-          React.createElement(ShortBlog, {name: blog.name, createdDate: blog.createdDate}, 
+          React.createElement(ShortBlog, {name: blog.name, createdDate: blog.createdDate, id: blog._id}, 
             blog.shortBody
           )
         );
@@ -74,19 +76,25 @@
     render : function() {
       var name = this.props.name,
           createdDate = moment(this.props.createdDate).format('MMMM DD, YYYY'),
-          body = this.props.children;
+          body = this.props.children,
+          viewFull = '/' + this.props.id;
         
       return (
         React.createElement("div", {className: "blog"}, 
-          React.createElement("div", null, 
-            React.createElement("h2", null, name), 
-            React.createElement("div", {className: "blog-date"}, 
-              React.createElement("i", null, createdDate)
+            React.createElement("div", {className: "row"}, 
+              React.createElement("h2", null, name)
             ), 
-            React.createElement("div", null, 
+            React.createElement("div", {className: "row"}, 
+              React.createElement("div", {className: "blog-date pull-left"}, 
+                React.createElement("i", null, createdDate)
+              ), 
+              React.createElement("div", {className: "pull-right"}, 
+                React.createElement("a", {href: viewFull}, "View full page")
+              )
+            ), 
+            React.createElement("div", {className: "row"}, 
               React.createElement("span", {dangerouslySetInnerHTML: {__html: body}})
             )
-          )
         )
       );
     }
@@ -96,7 +104,7 @@
     render : function() {
       var blogNodes = this.props.data.map(function(blog) {
         return (
-          React.createElement(Blog, {name: blog.name, createdDate: blog.createdDate}, 
+          React.createElement(Blog, {name: blog.name, createdDate: blog.createdDate, id: blog._id}, 
             blog.body
           )
         );

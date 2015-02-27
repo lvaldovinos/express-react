@@ -5,20 +5,22 @@ var React = require('react'),
     render : function() {
       var name = this.props.name,
           createdDate = moment(this.props.createdDate).format('MMMM DD, YYYY'),
-          body = this.props.children;
+          body = this.props.children,
+          viewFull = '/' + this.props.id;;
       //shorten body..
       return (
-        <div className="shortBlog">
-          <div>
-            <h5>{name}</h5>
-            <div className="blog-date">
+        <div className="shortBlog clearfix">
+          <h5>{name}</h5>
+          <div className="clearfix">
+            <div className="blog-date pull-left">
               <i>{createdDate}</i>
             </div>
           </div>
-          <div>
-            <small>
-              <span dangerouslySetInnerHTML={{__html : body}} />
-            </small>
+          <small>
+            <span dangerouslySetInnerHTML={{__html : body}} />
+          </small>
+          <div className="pull-right">
+            <a href={viewFull}>View full page</a>
           </div>
         </div>
       );
@@ -29,7 +31,7 @@ var React = require('react'),
     render : function() {
       var shortenBlogs = this.props.data.map(function(blog) {
         return (
-          <ShortBlog name={blog.name} createdDate={blog.createdDate}>
+          <ShortBlog name={blog.name} createdDate={blog.createdDate} id={blog._id}>
             {blog.shortBody}
           </ShortBlog>
         );

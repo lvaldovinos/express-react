@@ -8,6 +8,7 @@
       read : function() {
         var blogs = [
           {
+            _id : 1,
             name : 'Sample blog post',
             body : '<p>This blog post shows a few different types of content that\'s supported and styled with Bootstrap. Basic typography, images, and code are all supported.</p>' +
             '<hr>' +
@@ -41,6 +42,7 @@
             shortBody : '<p>This blog post shows a few different types of content that\'s supported and styled with Bootstra...</p>'
           },
           {
+            _id : 2,
             name : 'Sample blog post',
             body : '<p>This blog post shows a few different types of content that\'s supported and styled with Bootstrap. Basic typography, images, and code are all supported.</p>' +
             '<hr>' +
@@ -74,6 +76,7 @@
             shortBody : '<p>This blog post shows a few different types of content that\'s supported and styled with Bootstra...</p>'
           },
           {
+            _id : 3,
             name : 'Sample blog post',
             body : '<p>This blog post shows a few different types of content that\'s supported and styled with Bootstrap. Basic typography, images, and code are all supported.</p>' +
             '<hr>' +
@@ -107,6 +110,7 @@
             shortBody : '<p>This blog post shows a few different types of content that\'s supported and styled with Bootstra...</p>'
           },
           {
+            _id : 4,
             name : 'Sample blog post',
             body : '<p>This blog post shows a few different types of content that\'s supported and styled with Bootstrap. Basic typography, images, and code are all supported.</p>' +
             '<hr>' +
@@ -140,6 +144,7 @@
             shortBody : '<p>This blog post shows a few different types of content that\'s supported and styled with Bootstra...</p>'
           },
           {
+            _id : 5,
             name : 'Sample blog post',
             body : '<p>This blog post shows a few different types of content that\'s supported and styled with Bootstrap. Basic typography, images, and code are all supported.</p>' +
             '<hr>' +
@@ -173,6 +178,7 @@
             shortBody : '<p>This blog post shows a few different types of content that\'s supported and styled with Bootstra...</p>'
           },
           {
+            _id : 6,
             name : 'Sample blog post',
             body : '<p>This blog post shows a few different types of content that\'s supported and styled with Bootstrap. Basic typography, images, and code are all supported.</p>' +
             '<hr>' +
@@ -206,6 +212,7 @@
             shortBody : '<p>This blog post shows a few different types of content that\'s supported and styled with Bootstra...</p>'
           },
           {
+            _id : 7,
             name : 'Sample blog post',
             body : '<p>This blog post shows a few different types of content that\'s supported and styled with Bootstrap. Basic typography, images, and code are all supported.</p>' +
             '<hr>' +
