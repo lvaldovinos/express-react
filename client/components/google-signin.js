@@ -1,4 +1,5 @@
 (function(React , gapi) {
+  'use strict';
   var GoogleSignin = React.createClass({
       handleClick : function(e) {
         if (gapi.isReady) {
@@ -25,6 +26,10 @@
       }
   });
   
-  React.render(<GoogleSignin clientId='808577327383-iua4f59mchljenv33gg49bhkn137nqjm.apps.googleusercontent.com' scope='https://www.googleapis.com/auth/userinfo.email'/> , document.getElementById('google-signin'));
+  //React.render(<GoogleSignin clientId='808577327383-iua4f59mchljenv33gg49bhkn137nqjm.apps.googleusercontent.com' scope='https://www.googleapis.com/auth/userinfo.email'/> , document.getElementById('google-signin'));
   
-}(window.myLib.React , window.gapi));
+  if (!window.myLib.components) {
+    window.myLib.components = {};
+  }
+  window.myLib.components.GoogleSignin = GoogleSignin;
+}(myLib.React , gapi));

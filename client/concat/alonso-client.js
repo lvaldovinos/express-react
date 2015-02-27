@@ -1,10 +1,10 @@
-(function(React , moment , aapi) {
+(function(React , moment , aapi , Link) {
+  'use strict';
   var ShortBlog = React.createClass({
     render : function() {
       var name = this.props.name,
           createdDate = moment(this.props.createdDate).format('MMMM DD, YYYY'),
-          body = this.props.children,
-          viewFull = '/' + this.props.id;;
+          body = this.props.children;
       //shorten body..
       return (
         <div className="shortBlog clearfix">
@@ -18,7 +18,7 @@
             <span dangerouslySetInnerHTML={{__html : body}} />
           </small>
           <div className="pull-right">
-            <a href={viewFull}>View full page</a>
+            <Link to="blog" params={{id : this.props.id}}>View full page</Link>
           </div>
         </div>
       );
@@ -64,20 +64,22 @@
     }
   });
   
-  React.render( <ActivityBox data={aapi.blogs.read({
+  /*React.render( <ActivityBox data={aapi.blogs.read({
     offset : 0,
     limit : 3
-  })} /> , document.getElementById('activity-box'))
-}(window.myLib.React , window.myLib.moment , window.myLib.aapi));
-'use strict';
-
-(function(React , moment , aapi) {
+  })} /> , document.getElementById('activity-box'))*/
+  if (!window.myLib.components) {
+    window.myLib.components = {};
+  }
+  window.myLib.components.ActivityBox = ActivityBox;
+}(myLib.React , myLib.moment , myLib.aapi , myLib.Router.Link));
+(function(React , moment , Link) {
+  'use strict';
   var Blog = React.createClass({
     render : function() {
       var name = this.props.name,
           createdDate = moment(this.props.createdDate).format('MMMM DD, YYYY'),
-          body = this.props.children,
-          viewFull = '/' + this.props.id;
+          body = this.props.children;
         
       return (
         <div className="blog">
@@ -89,7 +91,7 @@
                 <i>{createdDate}</i>
               </div>
               <div className="pull-right">
-                <a href={viewFull}>View full page</a>
+                <Link to="blog" params={{id : this.props.id}}>View full page</Link>
               </div>
             </div>
             <div className="row">
@@ -215,10 +217,101 @@
     }
   });
   
-  React.render(<BlogPagination data={aapi.blogs.read()} limit={1} /> , document.getElementById('blog-pagination')); 
+  //React.render(<BlogPagination data={aapi.blogs.read()} limit={1} /> , document.getElementById('blog-pagination')); 
+  if (!window.myLib.components) {
+    window.myLib.components = {};
+  }
+  window.myLib.components.BlogPagination = BlogPagination;
   
-}(window.myLib.React , window.myLib.moment , window.myLib.aapi));
+}(myLib.React , myLib.moment , myLib.Router.Link));
+(function(React) {
+  'use strict';
+  var Footer = React.createClass({
+    render : function() {
+      return (
+        <div id="footer-container">
+          <div className="row" id="footer-info">
+            <div className="col-md-4 col-md-offset-1 col-sm-4 col-sm-offset-1 col-xm-12">
+              <h4 className="text-left">Let's touch base</h4>
+              <div className="row">
+                <div className="col-md-1 col-sm-1 col-xs-1 col-xs-offset-2 col-sm-offset-0 col-md-offset-0">
+                  <i className="fa fa-github fa-2x" ></i>
+                </div>
+                <div className="col-md-9 col-md-offset-1 col-sm-9 col-sm-offset-1 col-xs-7 col-xs-offset-1">
+                  <a href="https://github.com/lvaldovinos"> lvaldovinos </a>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-md-1 col-sm-1 col-xs-1 col-xs-offset-2 col-sm-offset-0 col-md-offset-0">
+                  <i className="fa fa-linkedin fa-2x" ></i>
+                </div>
+                <div className="col-md-9 col-md-offset-1 col-sm-9 col-sm-offset-1 col-xs-6 col-xs-offset-1">
+                  <a href="https://www.linkedin.com/profile/view?id=280404993&trk=nav_responsive_tab_profile_pic"> Luis Valdovinos </a>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-md-1 col-sm-1 col-xs-1 col-xs-offset-2 col-sm-offset-0 col-md-offset-0">
+                  <i className="fa fa-stack-overflow fa-2x" ></i>
+                </div>
+                <div className="col-md-9 col-md-offset-1 col-sm-9 col-sm-offset-1 col-xs-7 col-xs-offset-1">
+                  <a href="http://stackoverflow.com/users/3773628/lvaldovinos"> lvaldovinos </a>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-md-1 col-sm-1 col-xs-1 col-xs-offset-2 col-sm-offset-0 col-md-offset-0">
+                  <i className="fa fa-twitter fa-2x" ></i>
+                </div>
+                <div className="col-md-9 col-md-offset-1 col-sm-9 col-sm-offset-1 col-xs-7 col-xs-offset-1">
+                  <a href="https://twitter.com/alonsovalencia_?lang=en"> alonsovalecnia_ </a>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-md-9 col-md-offset-2  col-sm-9 col-sm-offset-2 col-xs-8 col-xs-offset-4">
+                  <a href="https://www.npmjs.com/~lvaldovinos"> npm profile </a>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-5 col-md-offset-1 col-sm-5 col-sm-offset-1 col-xm-12">
+              <h4 className="text-left">Current company</h4>     
+              <h5 className="text-left"><a href="http://www.unosquare.com">Unosquare</a></h5>
+              <div className="row">
+                <div className="col-md-1 col-sm-1 col-xs-1 col-xs-offset-2 col-sm-offset-0 col-md-offset-0">
+                  <i className="fa fa-globe fa-2x"></i>
+                </div>
+                <div className="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-7 col-xs-offset-1">
+                  <address>
+                    <strong>Guadalajara , Mexico</strong>
+                    <div>Av. Américas 1536 1A</div>
+                    <div>Col. Country Club</div>
+                    <div>C.P. 44637</div>
+                    <div>Jalisco, México</div>
+                    <div id="company-phone">
+                      <span>+52 (33) 3839-1855</span>
+                    </div>
+                  </address>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="row" id="footer-email">
+            <div className="col-md-12">
+              <p className="text-center">
+                <i className="fa fa-envelope fa-lg" ></i>
+                <a href="mailto:lastkiss115@gmail.com">  Luis Alonso Valdovinos Valencia</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+  });
+  if (!window.myLib.components) {
+    window.myLib.components = {};
+  }
+  window.myLib.components.Footer = Footer;
+}(myLib.React));
 (function(React , gapi) {
+  'use strict';
   var GoogleSignin = React.createClass({
       handleClick : function(e) {
         if (gapi.isReady) {
@@ -245,6 +338,121 @@
       }
   });
   
-  React.render(<GoogleSignin clientId='808577327383-iua4f59mchljenv33gg49bhkn137nqjm.apps.googleusercontent.com' scope='https://www.googleapis.com/auth/userinfo.email'/> , document.getElementById('google-signin'));
+  //React.render(<GoogleSignin clientId='808577327383-iua4f59mchljenv33gg49bhkn137nqjm.apps.googleusercontent.com' scope='https://www.googleapis.com/auth/userinfo.email'/> , document.getElementById('google-signin'));
   
-}(window.myLib.React , window.gapi));
+  if (!window.myLib.components) {
+    window.myLib.components = {};
+  }
+  window.myLib.components.GoogleSignin = GoogleSignin;
+}(myLib.React , gapi));
+(function(React) {
+  'use strict';
+  var Header = React.createClass({
+    render : function() {
+      return (
+        <div className="row" id="header-container">
+          <div className="col-md-12">
+            <h1 className="text-center">Alonso thoughts</h1>
+            <p className="text-center lead">Happiness only real when shared</p>
+          </div>
+        </div>
+      );
+    }
+  });
+  
+  if (!window.myLib.components) {
+    window.myLib.components = {};
+  }
+  window.myLib.components.Header = Header;
+}(myLib.React));
+(function(BlogPagination , ActivityBox , GoogleSignin , aapi , React) {
+  'use strict';
+  var Body = React.createClass({
+    render : function() {
+      return (
+        <div className="row" id="body-container">
+          <div className="col-md-4 .col-sm-12" id="left-container">
+            <div className="row">
+              <div className="col-md-10 col-sm-4 col-md-offset-1">
+                <div id="personal-image" className="center-block">
+                  <img src="images/6406682.jpg" className="img-responsive img-circle" alt="Alonso @ The Blowhole"/>
+                </div>
+                <div id="google-signin" className="center-block">
+                  <GoogleSignin clientId={'808577327383-iua4f59mchljenv33gg49bhkn137nqjm.apps.googleusercontent.com'}
+                                scope={'https://www.googleapis.com/auth/userinfo.email'} />
+                </div>
+              </div>
+              <div className="col-md-12 col-sm-8">
+                <div id="activity-box"> 
+                  <ActivityBox data={aapi.blogs.read({
+                    offset : 0,
+                    limit : 3
+                  })} />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-7 col-md-offset-1 .col-sm-12" id="right-container">
+            <div id="blog-pagination">
+              <BlogPagination data={aapi.blogs.read()}
+                              limit={1} /> 
+            </div>
+          </div>
+        </div>
+      );
+    }
+  });
+  
+  if (!window.myLib.components) {
+    window.myLib.components = {};
+  }
+  window.myLib.components.Body = Body;
+  
+}(myLib.components.BlogPagination , myLib.components.ActivityBox , myLib.components.GoogleSignin , myLib.aapi , myLib.React));
+(function(React , Router) {
+  'use strict';
+  var Blog = React.createClass({
+    mixins : [Router.State],
+    render : function() {
+      return (
+        <div className="container" id="specific-blog">
+          <h1>{this.getParams().id}</h1>
+        </div>
+      );
+    }
+  });
+  
+  if (!window.myLib.components) {
+    window.myLib.components = {};
+  }
+  window.myLib.components.Blog = Blog;
+}(myLib.React , myLib.Router));
+(function(React , Header , Body , Footer , Router , Blog) {
+  'use strict';
+  var RouteHandler = Router.RouteHandler,
+      DefaultRoute = Router.DefaultRoute,
+      Route = Router.Route;
+  
+  var App = React.createClass({
+    render : function() {
+      return (
+        <div id="main">
+          <Header />
+          <RouteHandler />
+          <Footer />
+        </div>
+      );
+    }
+  });
+  
+  var routes = (
+    <Route name="home" path="/" handler={App}>
+      <Route name="blog" path="/blogs/:id" handler={Blog} />
+      <DefaultRoute handler={Body} />
+    </Route>
+  );
+  
+  Router.run(routes , function(Handler) {
+    React.render(<Handler /> , document.getElementById('main-app'));
+  });
+}(myLib.React , myLib.components.Header , myLib.components.Body , myLib.components.Footer , myLib.Router , myLib.components.Blog));

@@ -1,30 +1,29 @@
-'use strict';
-
-//function to handle gapi initialization
-var init = function() {
-   //load plus api
-  gapi.client.load('plus' , 'v1' , function() {
-    gapi.isReady = true;
+(function(React , Header , Body , Footer , Router , Blog) {
+  'use strict';
+  var RouteHandler = Router.RouteHandler,
+      DefaultRoute = Router.DefaultRoute,
+      Route = Router.Route;
+  
+  var App = React.createClass({
+    render : function() {
+      return (
+        <div id="main">
+          <Header />
+          <RouteHandler />
+          <Footer />
+        </div>
+      );
+    }
   });
-}
-
-window.init = init;
-
-var React = require('React'),
-    aapi = require('./components/alonso-api'),
-    BlogList = require('./components/blog-list'),
-    ActivityBox = require('./components/activity-box'),
-    GoogleSignin = require('./components/google-signin');    
-    
-if (!window.React) {
-  window.React = React;
-}
-
-React.render(<BlogList data={aapi.blogs.read()} /> , document.getElementById('blog-list'));
-
-React.render(<ActivityBox data={aapi.blogs.read({
-  offset : 0,
-  limit : 3
-})} /> , document.getElementById('activity-box'));
-
-React.render(<GoogleSignin clientId='323720500806-3migkqarjv91vgdcq92o02a90bqe5kbs.apps.googleusercontent.com' scope='https://www.googleapis.com/auth/userinfo.email'/> , document.getElementById('google-signin'));
+  
+  var routes = (
+    <Route name="home" path="/" handler={App}>
+      <Route name="blog" path="/blogs/:id" handler={Blog} />
+      <DefaultRoute handler={Body} />
+    </Route>
+  );
+  
+  Router.run(routes , function(Handler) {
+    React.render(<Handler /> , document.getElementById('main-app'));
+  });
+}(myLib.React , myLib.components.Header , myLib.components.Body , myLib.components.Footer , myLib.Router , myLib.components.Blog));

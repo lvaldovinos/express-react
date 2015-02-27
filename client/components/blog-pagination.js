@@ -1,12 +1,10 @@
-'use strict';
-
-(function(React , moment , aapi) {
+(function(React , moment , Link) {
+  'use strict';
   var Blog = React.createClass({
     render : function() {
       var name = this.props.name,
           createdDate = moment(this.props.createdDate).format('MMMM DD, YYYY'),
-          body = this.props.children,
-          viewFull = '/' + this.props.id;
+          body = this.props.children;
         
       return (
         <div className="blog">
@@ -18,7 +16,7 @@
                 <i>{createdDate}</i>
               </div>
               <div className="pull-right">
-                <a href={viewFull}>View full page</a>
+                <Link to="blog" params={{id : this.props.id}}>View full page</Link>
               </div>
             </div>
             <div className="row">
@@ -144,6 +142,10 @@
     }
   });
   
-  React.render(<BlogPagination data={aapi.blogs.read()} limit={1} /> , document.getElementById('blog-pagination')); 
+  //React.render(<BlogPagination data={aapi.blogs.read()} limit={1} /> , document.getElementById('blog-pagination')); 
+  if (!window.myLib.components) {
+    window.myLib.components = {};
+  }
+  window.myLib.components.BlogPagination = BlogPagination;
   
-}(window.myLib.React , window.myLib.moment , window.myLib.aapi));
+}(myLib.React , myLib.moment , myLib.Router.Link));

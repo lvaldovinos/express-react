@@ -1,10 +1,10 @@
-(function(React , moment , aapi) {
+(function(React , moment , aapi , Link) {
+  'use strict';
   var ShortBlog = React.createClass({
     render : function() {
       var name = this.props.name,
           createdDate = moment(this.props.createdDate).format('MMMM DD, YYYY'),
-          body = this.props.children,
-          viewFull = '/' + this.props.id;;
+          body = this.props.children;
       //shorten body..
       return (
         <div className="shortBlog clearfix">
@@ -18,7 +18,7 @@
             <span dangerouslySetInnerHTML={{__html : body}} />
           </small>
           <div className="pull-right">
-            <a href={viewFull}>View full page</a>
+            <Link to="blog" params={{id : this.props.id}}>View full page</Link>
           </div>
         </div>
       );
@@ -64,8 +64,12 @@
     }
   });
   
-  React.render( <ActivityBox data={aapi.blogs.read({
+  /*React.render( <ActivityBox data={aapi.blogs.read({
     offset : 0,
     limit : 3
-  })} /> , document.getElementById('activity-box'))
-}(window.myLib.React , window.myLib.moment , window.myLib.aapi));
+  })} /> , document.getElementById('activity-box'))*/
+  if (!window.myLib.components) {
+    window.myLib.components = {};
+  }
+  window.myLib.components.ActivityBox = ActivityBox;
+}(myLib.React , myLib.moment , myLib.aapi , myLib.Router.Link));
