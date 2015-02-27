@@ -11,7 +11,9 @@ var React = require('react'),
         <div className="shortBlog">
           <div>
             <h5>{name}</h5>
-            <em>{createdDate}</em>
+            <div className="blog-date">
+              <i>{createdDate}</i>
+            </div>
           </div>
           <div>
             <small>

@@ -12,7 +12,9 @@ var React = require('react'),
         <div className="blog">
           <div>
             <h2>{name}</h2>
-            <i>{createdDate}</i>
+            <div className="blog-date">
+              <i>{createdDate}</i>
+            </div>
             <div>
               <span dangerouslySetInnerHTML={{__html: body}} />
             </div>

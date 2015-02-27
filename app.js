@@ -21,7 +21,7 @@ app.use(express.static(path.resolve(__dirname , './public')));
 app.get('/' , function(req , res) {
   var blogsMu = React.renderToString(BlogPagination({
         data : aapi.blogs.read(),
-        limit : 2
+        limit : 1
       })),
       activityBoxMu = React.renderToString(ActivityBox({ 
         data : aapi.blogs.read({

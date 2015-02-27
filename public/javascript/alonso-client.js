@@ -9,7 +9,9 @@
         React.createElement("div", {className: "shortBlog"}, 
           React.createElement("div", null, 
             React.createElement("h5", null, name), 
-            React.createElement("em", null, createdDate)
+            React.createElement("div", {className: "blog-date"}, 
+              React.createElement("i", null, createdDate)
+            )
           ), 
           React.createElement("div", null, 
             React.createElement("small", null, 
@@ -78,7 +80,9 @@
         React.createElement("div", {className: "blog"}, 
           React.createElement("div", null, 
             React.createElement("h2", null, name), 
-            React.createElement("i", null, createdDate), 
+            React.createElement("div", {className: "blog-date"}, 
+              React.createElement("i", null, createdDate)
+            ), 
             React.createElement("div", null, 
               React.createElement("span", {dangerouslySetInnerHTML: {__html: body}})
             )
@@ -203,7 +207,7 @@
     }
   });
   
-  React.render(React.createElement(BlogPagination, {data: aapi.blogs.read(), limit: 2}) , document.getElementById('blog-pagination')); 
+  React.render(React.createElement(BlogPagination, {data: aapi.blogs.read(), limit: 1}) , document.getElementById('blog-pagination')); 
   
 }(window.myLib.React , window.myLib.moment , window.myLib.aapi));
 (function(React , gapi) {
@@ -227,7 +231,7 @@
       render : function() {
         return (
           React.createElement("div", {className: "googleSignin"}, 
-            React.createElement("button", {className: "btn btn-default", onClick: this.handleClick}, React.createElement("i", {className: "fa fa-google-plus"}), "  Sign in")
+            React.createElement("button", {className: "btn btn-default", onClick: this.handleClick}, React.createElement("i", {className: "fa fa-google-plus fa-lg"}), "  Sign in")
           )
         );
       }

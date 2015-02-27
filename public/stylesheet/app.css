@@ -6,10 +6,44 @@
   font-family: 'Shadows Into Light', cursive;
 }
 
-#body-container #left-container img.img-responsive {
-  border: 2px solid #C4BBBB;
+#body-container #left-container img.img-responsive,
+#body-container #left-container #personal-image {
   width: 200px;
   height: 200px;
+}
+
+#body-container #left-container img.img-responsive {
+  border: 2px solid #C4BBBB;
+}
+
+#body-container #left-container #google-signin {
+  width : 90px;
+}
+
+#body-container .blogPagination .blogList h2,
+#body-container .blogPagination .blogList .blog-date,
+#body-container #left-container #activity-box .activityBox .blogActivity .shortBlog h5,
+#body-container #left-container #activity-box .activityBox .blogActivity .shortBlog .blog-date
+ {
+  font-family: 'Lora', serif;
+}
+
+#body-container #left-container #activity-box .activityBox h4{
+  background-color: #E29E9E;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  
+}
+
+#body-container .blogPagination .blogList .blog-date,
+#body-container #left-container #activity-box .activityBox .blogActivity .shortBlog .blog-date {
+  color: #C4BBBB;
+  margin-bottom: 2em;
+}
+
+#body-container #left-container #activity-box .activityBox .blogActivity .shortBlog .blog-date {
+  margin-bottom: 0.5em;
 }
 
 #google-signin {

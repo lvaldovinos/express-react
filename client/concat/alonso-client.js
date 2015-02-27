@@ -9,7 +9,9 @@
         <div className="shortBlog">
           <div>
             <h5>{name}</h5>
-            <em>{createdDate}</em>
+            <div className="blog-date">
+              <i>{createdDate}</i>
+            </div>
           </div>
           <div>
             <small>
@@ -78,7 +80,9 @@
         <div className="blog">
           <div>
             <h2>{name}</h2>
-            <i>{createdDate}</i>
+            <div className="blog-date">
+              <i>{createdDate}</i>
+            </div>
             <div>
               <span dangerouslySetInnerHTML={{__html: body}} />
             </div>
@@ -203,7 +207,7 @@
     }
   });
   
-  React.render(<BlogPagination data={aapi.blogs.read()} limit={2} /> , document.getElementById('blog-pagination')); 
+  React.render(<BlogPagination data={aapi.blogs.read()} limit={1} /> , document.getElementById('blog-pagination')); 
   
 }(window.myLib.React , window.myLib.moment , window.myLib.aapi));
 (function(React , gapi) {
@@ -227,7 +231,7 @@
       render : function() {
         return (
           <div className="googleSignin">
-            <button className="btn btn-default" onClick={this.handleClick}><i className="fa fa-google-plus"></i>  Sign in</button>
+            <button className="btn btn-default" onClick={this.handleClick}><i className="fa fa-google-plus fa-lg"></i>  Sign in</button>
           </div>
         );
       }
