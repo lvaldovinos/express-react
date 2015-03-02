@@ -1,4 +1,4 @@
-(function(React , gapi) {
+(function(React , gapi , aapi) {
   'use strict';
   var GoogleSignin = React.createClass({
       handleClick : function(e) {
@@ -11,6 +11,14 @@
               scope : this.props.scope
             } , function(authResult) {
               console.log(authResult);
+              if (authResult.status['signed_in']) {
+                //create new token on alonso.thoughtapi
+                aapi
+                  .tokens
+                  .create(authResult['token_type'] + ' ' + authResult['access_token'] , function(res) {
+                    console.log(res);
+                  });
+              }
             });
         }
         else {
@@ -32,4 +40,4 @@
     window.myLib.components = {};
   }
   window.myLib.components.GoogleSignin = GoogleSignin;
-}(myLib.React , gapi));
+}(myLib.React , gapi , myLib.aapi));

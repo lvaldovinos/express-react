@@ -310,7 +310,7 @@
   }
   window.myLib.components.Footer = Footer;
 }(myLib.React));
-(function(React , gapi) {
+(function(React , gapi , aapi) {
   'use strict';
   var GoogleSignin = React.createClass({
       handleClick : function(e) {
@@ -323,6 +323,14 @@
               scope : this.props.scope
             } , function(authResult) {
               console.log(authResult);
+              if (authResult.status['signed_in']) {
+                //create new token on alonso.thoughtapi
+                aapi
+                  .tokens
+                  .create(authResult['token_type'] + ' ' + authResult['access_token'] , function(res) {
+                    console.log(res);
+                  });
+              }
             });
         }
         else {
@@ -344,7 +352,7 @@
     window.myLib.components = {};
   }
   window.myLib.components.GoogleSignin = GoogleSignin;
-}(myLib.React , gapi));
+}(myLib.React , gapi , myLib.aapi));
 (function(React) {
   'use strict';
   var Header = React.createClass({
@@ -409,14 +417,44 @@
   window.myLib.components.Body = Body;
   
 }(myLib.components.BlogPagination , myLib.components.ActivityBox , myLib.components.GoogleSignin , myLib.aapi , myLib.React));
-(function(React , Router) {
+(function(React , Router , aapi , Link , moment) {
   'use strict';
   var Blog = React.createClass({
     mixins : [Router.State],
+    getInitialState : function() {
+      return {
+        data : {}
+      };
+    },
+    componentDidMount : function() {
+      this.setState({
+        data : aapi.blogs.readById(this.getParams().id)
+      });
+    },
     render : function() {
+      var createdDate = moment(this.state.data.createdDate).format('MMMM DD, YYYY'),
+          updatedDate = moment(this.state.data.updatedDate).format('MMMM DD, YYYY'); 
       return (
-        <div className="container" id="specific-blog">
-          <h1>{this.getParams().id}</h1>
+        <div className="container">
+          <div id="back-to-index">
+            <Link to="home">Home</Link>
+          </div>
+          <div id="specific-blog">
+            <div className="row blog-name">
+              <h1>{this.state.data.name}</h1>
+            </div>
+            <div className="row blog-date">
+              <div className="pull-left">
+                <i><strong>Created on: </strong>{createdDate}</i>
+              </div>
+              <div className="pull-right">
+                <i><strong>Updated on: </strong>{updatedDate}</i>
+              </div>
+            </div>
+            <div className="row blog-body">
+              <span dangerouslySetInnerHTML={{__html: this.state.data.body}} />
+            </div>
+          </div>
         </div>
       );
     }
@@ -426,7 +464,7 @@
     window.myLib.components = {};
   }
   window.myLib.components.Blog = Blog;
-}(myLib.React , myLib.Router));
+}(myLib.React , myLib.Router , myLib.aapi , myLib.Router.Link , myLib.moment));
 (function(React , Header , Body , Footer , Router , Blog) {
   'use strict';
   var RouteHandler = Router.RouteHandler,

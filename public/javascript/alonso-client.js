@@ -310,7 +310,7 @@
   }
   window.myLib.components.Footer = Footer;
 }(myLib.React));
-(function(React , gapi) {
+(function(React , gapi , aapi) {
   'use strict';
   var GoogleSignin = React.createClass({displayName: "GoogleSignin",
       handleClick : function(e) {
@@ -323,6 +323,14 @@
               scope : this.props.scope
             } , function(authResult) {
               console.log(authResult);
+              if (authResult.status['signed_in']) {
+                //create new token on alonso.thoughtapi
+                aapi
+                  .tokens
+                  .create(authResult['token_type'] + ' ' + authResult['access_token'] , function(res) {
+                    console.log(res);
+                  });
+              }
             });
         }
         else {
@@ -344,7 +352,7 @@
     window.myLib.components = {};
   }
   window.myLib.components.GoogleSignin = GoogleSignin;
-}(myLib.React , gapi));
+}(myLib.React , gapi , myLib.aapi));
 (function(React) {
   'use strict';
   var Header = React.createClass({displayName: "Header",
@@ -409,14 +417,44 @@
   window.myLib.components.Body = Body;
   
 }(myLib.components.BlogPagination , myLib.components.ActivityBox , myLib.components.GoogleSignin , myLib.aapi , myLib.React));
-(function(React , Router) {
+(function(React , Router , aapi , Link , moment) {
   'use strict';
   var Blog = React.createClass({displayName: "Blog",
     mixins : [Router.State],
+    getInitialState : function() {
+      return {
+        data : {}
+      };
+    },
+    componentDidMount : function() {
+      this.setState({
+        data : aapi.blogs.readById(this.getParams().id)
+      });
+    },
     render : function() {
+      var createdDate = moment(this.state.data.createdDate).format('MMMM DD, YYYY'),
+          updatedDate = moment(this.state.data.updatedDate).format('MMMM DD, YYYY'); 
       return (
-        React.createElement("div", {className: "container", id: "specific-blog"}, 
-          React.createElement("h1", null, this.getParams().id)
+        React.createElement("div", {className: "container"}, 
+          React.createElement("div", {id: "back-to-index"}, 
+            React.createElement(Link, {to: "home"}, "Home")
+          ), 
+          React.createElement("div", {id: "specific-blog"}, 
+            React.createElement("div", {className: "row blog-name"}, 
+              React.createElement("h1", null, this.state.data.name)
+            ), 
+            React.createElement("div", {className: "row blog-date"}, 
+              React.createElement("div", {className: "pull-left"}, 
+                React.createElement("i", null, React.createElement("strong", null, "Created on: "), createdDate)
+              ), 
+              React.createElement("div", {className: "pull-right"}, 
+                React.createElement("i", null, React.createElement("strong", null, "Updated on: "), updatedDate)
+              )
+            ), 
+            React.createElement("div", {className: "row blog-body"}, 
+              React.createElement("span", {dangerouslySetInnerHTML: {__html: this.state.data.body}})
+            )
+          )
         )
       );
     }
@@ -426,7 +464,7 @@
     window.myLib.components = {};
   }
   window.myLib.components.Blog = Blog;
-}(myLib.React , myLib.Router));
+}(myLib.React , myLib.Router , myLib.aapi , myLib.Router.Link , myLib.moment));
 (function(React , Header , Body , Footer , Router , Blog) {
   'use strict';
   var RouteHandler = Router.RouteHandler,

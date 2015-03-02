@@ -23,7 +23,9 @@
 #body-container .blogPagination .blogList h2,
 #body-container .blogPagination .blogList .blog-date,
 #body-container #left-container #activity-box .activityBox .blogActivity .shortBlog h5,
-#body-container #left-container #activity-box .activityBox .blogActivity .shortBlog .blog-date
+#body-container #left-container #activity-box .activityBox .blogActivity .shortBlog .blog-date,
+#specific-blog .blog-date,
+#specific-blog h1
  {
   font-family: 'Lora', serif;
 }
@@ -37,8 +39,14 @@
 }
 
 #body-container .blogPagination .blogList .blog-date,
-#body-container #left-container #activity-box .activityBox .blogActivity .shortBlog .blog-date {
+#body-container #left-container #activity-box .activityBox .blogActivity .shortBlog .blog-date,
+#specific-blog .blog-date span {
   color: #C4BBBB;
+  margin-bottom: 2em;
+}
+
+#specific-blog .blog-date,
+#specific-blog .blog-body {
   margin-bottom: 2em;
 }
 
