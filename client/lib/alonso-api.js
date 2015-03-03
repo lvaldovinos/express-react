@@ -1,6 +1,5 @@
 'use strict';
-var request = require('my-request'),
-    _url = 'http://alonso-thoughtsapi.rhcloud.com',
+var myRequest = require('my-request').init('http://alonso-thoughtsapi.rhcloud.com'),
     aapi = {};
       
 aapi.blogs = {
@@ -291,7 +290,7 @@ aapi.tokens = (function() {
       token_id;
   return {
     create : function(gToken , cb) {
-      request(_url)
+      myRequest
         .post('/tokens')
         .send({ token : gToken })
         .end(function(res) {
@@ -299,12 +298,17 @@ aapi.tokens = (function() {
           if (body.code === 200 && body.data['token_id']) {
             aux = true;
             token_id = body.data['token_id'];
+            myRequest.setPermanent({ Authorization : token_id });
           }
           cb(body);
         });
     },
     delete : function(id , cb) {
-      request(_url)
+      if (typeof id === 'function' && !cb && token_id) {
+        cb = id;
+        id = token_id;
+      }
+      myRequest
         .delete('/tokens/' + id)
         .end(function(res) {
           var body = res.body || {};

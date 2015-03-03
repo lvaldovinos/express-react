@@ -1,29 +1,8 @@
-(function(React , gapi , aapi) {
+(function(React) {
   'use strict';
   var GoogleSignin = React.createClass({
       handleClick : function(e) {
-        if (gapi.isReady) {
-          gapi
-            .auth
-            .authorize({
-              client_id : this.props.clientId,
-              immediate : false,
-              scope : this.props.scope
-            } , function(authResult) {
-              console.log(authResult);
-              if (authResult.status['signed_in']) {
-                //create new token on alonso.thoughtapi
-                aapi
-                  .tokens
-                  .create(authResult['token_type'] + ' ' + authResult['access_token'] , function(res) {
-                    console.log(res);
-                  });
-              }
-            });
-        }
-        else {
-          console.log('gapi is not ready to be used yet!');
-        }
+        this.props.onClick(e);
       },
       render : function() {
         return (
@@ -40,4 +19,4 @@
     window.myLib.components = {};
   }
   window.myLib.components.GoogleSignin = GoogleSignin;
-}(myLib.React , gapi , myLib.aapi));
+}(myLib.React));

@@ -310,32 +310,11 @@
   }
   window.myLib.components.Footer = Footer;
 }(myLib.React));
-(function(React , gapi , aapi) {
+(function(React) {
   'use strict';
   var GoogleSignin = React.createClass({
       handleClick : function(e) {
-        if (gapi.isReady) {
-          gapi
-            .auth
-            .authorize({
-              client_id : this.props.clientId,
-              immediate : false,
-              scope : this.props.scope
-            } , function(authResult) {
-              console.log(authResult);
-              if (authResult.status['signed_in']) {
-                //create new token on alonso.thoughtapi
-                aapi
-                  .tokens
-                  .create(authResult['token_type'] + ' ' + authResult['access_token'] , function(res) {
-                    console.log(res);
-                  });
-              }
-            });
-        }
-        else {
-          console.log('gapi is not ready to be used yet!');
-        }
+        this.props.onClick(e);
       },
       render : function() {
         return (
@@ -352,7 +331,27 @@
     window.myLib.components = {};
   }
   window.myLib.components.GoogleSignin = GoogleSignin;
-}(myLib.React , gapi , myLib.aapi));
+}(myLib.React));
+(function(React) {
+  'use strict';
+  var GoogleSignout = React.createClass({
+      handleClick : function(e) {
+        this.props.onClick(e);
+      },
+      render : function() {
+        return (
+          <div className="googleSignout">
+            <button className="btn btn-default" onClick={this.handleClick}><i className="fa fa-sign-out fa-lg"></i>  Sign out</button>
+          </div>
+        );
+      }
+  });
+  
+ if (!window.myLib.components) {
+    window.myLib.components = {};
+  }
+  window.myLib.components.GoogleSignout = GoogleSignout;
+}(myLib.React));
 (function(React) {
   'use strict';
   var Header = React.createClass({
@@ -373,7 +372,80 @@
   }
   window.myLib.components.Header = Header;
 }(myLib.React));
-(function(BlogPagination , ActivityBox , GoogleSignin , aapi , React) {
+(function(React , GoogleSignin , GoogleSignout , aapi , gapi) {
+  'use strict';
+  var SignInOut = React.createClass({
+    getInitialState : function() {
+      return {
+        aux : aapi.tokens.isAlonsoLoggedIn()
+      };
+    },
+    onSignIn : function(e) {
+      e.preventDefault();
+      if (gapi.isReady) {
+        gapi
+          .auth
+          .authorize({
+            client_id : this.props.clientId,
+            immediate : false,
+            scope : this.props.scope
+          }, function(authResult) {
+            console.log(authResult);
+            if (authResult.status['signed_in']) {
+              //create new token on alonso.thoughtapi
+              aapi
+                .tokens
+                .create(authResult['token_type'] + ' ' + authResult['access_token'] , function(res) {
+                  if (res.code === 200) {
+                    this.setState({
+                      aux : aapi.tokens.isAlonsoLoggedIn()
+                    });
+                  }
+                }.bind(this));
+            }
+          }.bind(this));
+      }
+      else {
+        console.log('gapi is not ready to be used yet!');
+      }
+    },
+    onSignOut : function(e) {
+      e.preventDefault();
+      if (gapi.isReady) {
+        aapi
+          .tokens
+          .delete(function(res) {
+            if (res.code === 200) {
+              this.setState({
+                aux : aapi.tokens.isAlonsoLoggedIn()
+              });
+            }
+          }.bind(this));
+      }
+      else {
+        console.log('gapi is not ready to be used yet!');
+      }
+    },
+    render : function() {
+      var button = <GoogleSignin onClick={this.onSignIn}/>;
+      if (this.state.aux) {
+        button = <GoogleSignout onClick={this.onSignOut}/>;
+      }
+      return (
+        <div id="signin-out" className="center-block">
+          {button}
+        </div>
+      );
+    }
+  });
+  
+  if (!window.myLib.components) {
+    window.myLib.components = {};
+  }
+  window.myLib.components.SignInOut = SignInOut;
+  
+}(myLib.React , myLib.components.GoogleSignin , myLib.components.GoogleSignout , myLib.aapi , gapi));
+(function(BlogPagination , ActivityBox , SignInOut , aapi , React) {
   'use strict';
   var Body = React.createClass({
     render : function() {
@@ -386,8 +458,8 @@
                   <img src="images/6406682.jpg" className="img-responsive img-circle" alt="Alonso @ The Blowhole"/>
                 </div>
                 <div id="google-signin" className="center-block">
-                  <GoogleSignin clientId={'808577327383-iua4f59mchljenv33gg49bhkn137nqjm.apps.googleusercontent.com'}
-                                scope={'https://www.googleapis.com/auth/userinfo.email'} />
+                  <SignInOut clientId={'808577327383-iua4f59mchljenv33gg49bhkn137nqjm.apps.googleusercontent.com'}
+                             scope={'https://www.googleapis.com/auth/userinfo.email'} />
                 </div>
               </div>
               <div className="col-md-12 col-sm-8">
@@ -416,7 +488,7 @@
   }
   window.myLib.components.Body = Body;
   
-}(myLib.components.BlogPagination , myLib.components.ActivityBox , myLib.components.GoogleSignin , myLib.aapi , myLib.React));
+}(myLib.components.BlogPagination , myLib.components.ActivityBox , myLib.components.SignInOut , myLib.aapi , myLib.React));
 (function(React , Router , aapi , Link , moment) {
   'use strict';
   var Blog = React.createClass({

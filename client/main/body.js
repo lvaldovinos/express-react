@@ -1,4 +1,4 @@
-(function(BlogPagination , ActivityBox , GoogleSignin , aapi , React) {
+(function(BlogPagination , ActivityBox , SignInOut , aapi , React) {
   'use strict';
   var Body = React.createClass({
     render : function() {
@@ -11,8 +11,8 @@
                   <img src="images/6406682.jpg" className="img-responsive img-circle" alt="Alonso @ The Blowhole"/>
                 </div>
                 <div id="google-signin" className="center-block">
-                  <GoogleSignin clientId={'808577327383-iua4f59mchljenv33gg49bhkn137nqjm.apps.googleusercontent.com'}
-                                scope={'https://www.googleapis.com/auth/userinfo.email'} />
+                  <SignInOut clientId={'808577327383-iua4f59mchljenv33gg49bhkn137nqjm.apps.googleusercontent.com'}
+                             scope={'https://www.googleapis.com/auth/userinfo.email'} />
                 </div>
               </div>
               <div className="col-md-12 col-sm-8">
@@ -41,4 +41,4 @@
   }
   window.myLib.components.Body = Body;
   
-}(myLib.components.BlogPagination , myLib.components.ActivityBox , myLib.components.GoogleSignin , myLib.aapi , myLib.React));
+}(myLib.components.BlogPagination , myLib.components.ActivityBox , myLib.components.SignInOut , myLib.aapi , myLib.React));

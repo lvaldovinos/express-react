@@ -16,8 +16,8 @@
   border: 2px solid #C4BBBB;
 }
 
-#body-container #left-container #google-signin {
-  width : 90px;
+#body-container #left-container #signin-out {
+  width : 100px;
 }
 
 #body-container .blogPagination .blogList h2,
