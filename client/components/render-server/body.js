@@ -23,17 +23,14 @@ var Body = React.createClass({
             </div>
             <div className="col-md-12 col-sm-8">
               <div id="activity-box"> 
-                <ActivityBox data={aapi.blogs.read({
-                  offset : 0,
-                  limit : 3
-                })} />
+                <ActivityBox data={this.props.data.slice(0 , 3)} />
               </div>
             </div>
           </div>
         </div>
         <div className="col-md-7 col-md-offset-1 .col-sm-12" id="right-container">
           <div id="blog-pagination">
-            <BlogPagination data={aapi.blogs.read()}
+            <BlogPagination data={this.props.data}
                             limit={1} /> 
           </div>
         </div>

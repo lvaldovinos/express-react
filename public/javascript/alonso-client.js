@@ -29,7 +29,7 @@
     render : function() {
       var shortenBlogs = this.props.data.map(function(blog) {
         return (
-          React.createElement(ShortBlog, {name: blog.name, createdDate: blog.createdDate, id: blog._id}, 
+          React.createElement(ShortBlog, {name: blog.name, createdDate: blog.createdDate, id: blog._id, key: blog._id}, 
             blog.shortBody
           )
         );
@@ -106,7 +106,7 @@
     render : function() {
       var blogNodes = this.props.data.map(function(blog) {
         return (
-          React.createElement(Blog, {name: blog.name, createdDate: blog.createdDate, id: blog._id}, 
+          React.createElement(Blog, {name: blog.name, createdDate: blog.createdDate, id: blog._id, key: blog._id}, 
             blog.body
           )
         );
@@ -156,6 +156,9 @@
         case this.props.totalPages:
           nextEl = React.createElement(Next, {onClick: this.props.onNext, className: "hidden"});
         break;
+      }
+      if (this.props.totalPages === 1) {
+        nextEl = React.createElement(Next, {onClick: this.props.onNext, className: "hidden"});
       }
       console.log('Page: ' + this.props.index);
       return (
@@ -372,7 +375,21 @@
   }
   window.myLib.components.Header = Header;
 }(myLib.React));
-(function(React , GoogleSignin , GoogleSignout , aapi , gapi) {
+(function(React , Link) {
+  'use strict';
+  var NewBlogButton = React.createClass({displayName: "NewBlogButton",
+    render : function() {
+      return (
+        React.createElement(Link, {to: "new", className: "btn btn-success"}, "New Blog")
+      );
+    }
+  });
+  if (!window.myLib.components) {
+    window.myLib.components = {};
+  }
+  window.myLib.components.NewBlogButton = NewBlogButton;
+}(myLib.React , myLib.Router.Link));
+(function(React , GoogleSignin , GoogleSignout , NewBlogButton , aapi , gapi) {
   'use strict';
   var SignInOut = React.createClass({displayName: "SignInOut",
     getInitialState : function() {
@@ -395,7 +412,8 @@
               //create new token on alonso.thoughtapi
               aapi
                 .tokens
-                .create(authResult['token_type'] + ' ' + authResult['access_token'] , function(res) {
+                .create(authResult['token_type'] + ' ' + authResult['access_token'] , function(err , res) {
+                  if (err) throw err;
                   if (res.code === 200) {
                     this.setState({
                       aux : aapi.tokens.isAlonsoLoggedIn()
@@ -414,7 +432,8 @@
       if (gapi.isReady) {
         aapi
           .tokens
-          .delete(function(res) {
+          .delete(function(err , res) {
+            if (err) throw err;
             if (res.code === 200) {
               this.setState({
                 aux : aapi.tokens.isAlonsoLoggedIn()
@@ -429,7 +448,12 @@
     render : function() {
       var button = React.createElement(GoogleSignin, {onClick: this.onSignIn});
       if (this.state.aux) {
-        button = React.createElement(GoogleSignout, {onClick: this.onSignOut});
+        button = (
+          React.createElement("div", null, 
+            React.createElement(GoogleSignout, {onClick: this.onSignOut}), 
+            React.createElement(NewBlogButton, null)
+          )
+        );
       }
       return (
         React.createElement("div", {id: "signin-out", className: "center-block"}, 
@@ -444,10 +468,27 @@
   }
   window.myLib.components.SignInOut = SignInOut;
   
-}(myLib.React , myLib.components.GoogleSignin , myLib.components.GoogleSignout , myLib.aapi , gapi));
+}(myLib.React , myLib.components.GoogleSignin , myLib.components.GoogleSignout , myLib.components.NewBlogButton , myLib.aapi , gapi));
 (function(BlogPagination , ActivityBox , SignInOut , aapi , React) {
   'use strict';
   var Body = React.createClass({displayName: "Body",
+    getInitialState : function() {
+      return {
+        data : []
+      };
+    },
+    componentDidMount : function() {
+      aapi
+        .blogs
+        .read(function(err , res) {
+          if (err) throw err;
+          if (res.code === 200) {
+            this.setState({
+              data : res.data
+            })
+          }
+        }.bind(this));
+    },
     render : function() {
       return (
         React.createElement("div", {className: "row", id: "body-container"}, 
@@ -464,17 +505,14 @@
               ), 
               React.createElement("div", {className: "col-md-12 col-sm-8"}, 
                 React.createElement("div", {id: "activity-box"}, 
-                  React.createElement(ActivityBox, {data: aapi.blogs.read({
-                    offset : 0,
-                    limit : 3
-                  })})
+                  React.createElement(ActivityBox, {data: this.state.data.slice(0 , 3)})
                 )
               )
             )
           ), 
           React.createElement("div", {className: "col-md-7 col-md-offset-1 .col-sm-12", id: "right-container"}, 
             React.createElement("div", {id: "blog-pagination"}, 
-              React.createElement(BlogPagination, {data: aapi.blogs.read(), 
+              React.createElement(BlogPagination, {data: this.state.data, 
                               limit: 1})
             )
           )
@@ -499,9 +537,16 @@
       };
     },
     componentDidMount : function() {
-      this.setState({
-        data : aapi.blogs.readById(this.getParams().id)
-      });
+      aapi
+        .blogs
+        .readById(this.getParams().id , function(err , res) {
+          if (err) throw err;
+          if (res.code === 200) {            
+            this.setState({
+              data : res.data
+            });
+          }
+        }.bind(this));
     },
     render : function() {
       var createdDate = moment(this.state.data.createdDate).format('MMMM DD, YYYY'),
@@ -537,7 +582,82 @@
   }
   window.myLib.components.Blog = Blog;
 }(myLib.React , myLib.Router , myLib.aapi , myLib.Router.Link , myLib.moment));
-(function(React , Header , Body , Footer , Router , Blog) {
+(function(React , Link , aapi) {
+  'use strict';
+  var NewBlog = React.createClass({displayName: "NewBlog",
+    validateForm : function() {
+      var name = this.refs.name.getDOMNode().value.trim(),
+          body = this.refs.body.getDOMNode().value.trim();
+      if (!name || !body) {
+        this.setState({
+          message : 'Name and Body required'
+        });
+      }
+      else {
+        this.setState({
+          message : ''
+        });
+        return {
+          name : name,
+          body : body
+        };
+      }
+    },
+    getInitialState : function() {
+      return {
+        message : ''
+      };
+    },
+    onSubmit : function(e) {
+      e.preventDefault();
+      var refs = this.validateForm();
+      if (refs) {
+        aapi
+          .blogs
+          .create(refs , function(err , res) {
+            if (err) throw err;
+            if (res.code === 200) {
+              console.log('Show user a new blog was created!')
+            }
+          });
+      }
+    },
+    onInputChange : function(e) {
+      this.validateForm();
+    },
+    render : function() {
+      return (
+        React.createElement("div", {id: "new-blog", className: "container"}, 
+          React.createElement("div", {id: "back-to-index"}, 
+            React.createElement(Link, {to: "home"}, "Home")
+          ), 
+          React.createElement("h3", null, "New blog"), 
+          React.createElement("form", {onSubmit: this.onSubmit}, 
+            React.createElement("div", {className: "form-group"}, 
+              React.createElement("label", {for: "blog-name"}, "Name"), 
+              React.createElement("input", {id: "blog-name", type: "text", className: "form-control", placeholder: "Your new blog name!", ref: "name", onChange: this.onInputChange})
+            ), 
+            React.createElement("div", {className: "form-group"}, 
+              React.createElement("label", {for: "blog-body"}, "Body"), 
+              React.createElement("textarea", {className: "form-control", rows: "50", id: "blog-body", ref: "body", onChange: this.onInputChange})
+            ), 
+            React.createElement("button", {type: "submit", className: "btn btn-success"}, "Create"), 
+            React.createElement("div", {id: "error-message"}, 
+              React.createElement("p", null, this.state.message)
+            )
+          )
+        )
+      );
+    }
+  });
+  
+  if (!window.myLib.components) {
+    window.myLib.components = {};
+  }
+  window.myLib.components.NewBlog = NewBlog;
+  
+}(myLib.React , myLib.Router.Link , myLib.aapi));
+(function(React , Header , Body , Footer , Router , Blog , NewBlog) {
   'use strict';
   var RouteHandler = Router.RouteHandler,
       DefaultRoute = Router.DefaultRoute,
@@ -557,6 +677,7 @@
   
   var routes = (
     React.createElement(Route, {name: "home", path: "/", handler: App}, 
+      React.createElement(Route, {name: "new", path: "/blogs/new", handler: NewBlog}), 
       React.createElement(Route, {name: "blog", path: "/blogs/:id", handler: Blog}), 
       React.createElement(DefaultRoute, {handler: Body})
     )
@@ -565,4 +686,4 @@
   Router.run(routes , function(Handler) {
     React.render(React.createElement(Handler, null) , document.getElementById('main-app'));
   });
-}(myLib.React , myLib.components.Header , myLib.components.Body , myLib.components.Footer , myLib.Router , myLib.components.Blog));
+}(myLib.React , myLib.components.Header , myLib.components.Body , myLib.components.Footer , myLib.Router , myLib.components.Blog , myLib.components.NewBlog));

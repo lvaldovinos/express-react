@@ -10,7 +10,7 @@ var MainPage = React.createClass({
     return (
       <div id="main">
         <Header />
-        <Body />
+        <Body data={this.props.data}/>
         <Footer />
       </div>
     );

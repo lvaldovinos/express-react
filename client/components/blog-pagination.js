@@ -31,7 +31,7 @@
     render : function() {
       var blogNodes = this.props.data.map(function(blog) {
         return (
-          <Blog name={blog.name} createdDate={blog.createdDate} id={blog._id}>
+          <Blog name={blog.name} createdDate={blog.createdDate} id={blog._id} key={blog._id}>
             {blog.body}
           </Blog>
         );
@@ -81,6 +81,9 @@
         case this.props.totalPages:
           nextEl = <Next onClick={this.props.onNext} className="hidden"/>;
         break;
+      }
+      if (this.props.totalPages === 1) {
+        nextEl = <Next onClick={this.props.onNext} className="hidden"/>;
       }
       console.log('Page: ' + this.props.index);
       return (

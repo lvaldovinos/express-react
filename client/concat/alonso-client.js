@@ -29,7 +29,7 @@
     render : function() {
       var shortenBlogs = this.props.data.map(function(blog) {
         return (
-          <ShortBlog name={blog.name} createdDate={blog.createdDate} id={blog._id}>
+          <ShortBlog name={blog.name} createdDate={blog.createdDate} id={blog._id} key={blog._id}>
             {blog.shortBody}
           </ShortBlog>
         );
@@ -106,7 +106,7 @@
     render : function() {
       var blogNodes = this.props.data.map(function(blog) {
         return (
-          <Blog name={blog.name} createdDate={blog.createdDate} id={blog._id}>
+          <Blog name={blog.name} createdDate={blog.createdDate} id={blog._id} key={blog._id}>
             {blog.body}
           </Blog>
         );
@@ -156,6 +156,9 @@
         case this.props.totalPages:
           nextEl = <Next onClick={this.props.onNext} className="hidden"/>;
         break;
+      }
+      if (this.props.totalPages === 1) {
+        nextEl = <Next onClick={this.props.onNext} className="hidden"/>;
       }
       console.log('Page: ' + this.props.index);
       return (
@@ -372,7 +375,21 @@
   }
   window.myLib.components.Header = Header;
 }(myLib.React));
-(function(React , GoogleSignin , GoogleSignout , aapi , gapi) {
+(function(React , Link) {
+  'use strict';
+  var NewBlogButton = React.createClass({
+    render : function() {
+      return (
+        <Link to="new" className="btn btn-success">New Blog</Link>
+      );
+    }
+  });
+  if (!window.myLib.components) {
+    window.myLib.components = {};
+  }
+  window.myLib.components.NewBlogButton = NewBlogButton;
+}(myLib.React , myLib.Router.Link));
+(function(React , GoogleSignin , GoogleSignout , NewBlogButton , aapi , gapi) {
   'use strict';
   var SignInOut = React.createClass({
     getInitialState : function() {
@@ -395,7 +412,8 @@
               //create new token on alonso.thoughtapi
               aapi
                 .tokens
-                .create(authResult['token_type'] + ' ' + authResult['access_token'] , function(res) {
+                .create(authResult['token_type'] + ' ' + authResult['access_token'] , function(err , res) {
+                  if (err) throw err;
                   if (res.code === 200) {
                     this.setState({
                       aux : aapi.tokens.isAlonsoLoggedIn()
@@ -414,7 +432,8 @@
       if (gapi.isReady) {
         aapi
           .tokens
-          .delete(function(res) {
+          .delete(function(err , res) {
+            if (err) throw err;
             if (res.code === 200) {
               this.setState({
                 aux : aapi.tokens.isAlonsoLoggedIn()
@@ -429,7 +448,12 @@
     render : function() {
       var button = <GoogleSignin onClick={this.onSignIn}/>;
       if (this.state.aux) {
-        button = <GoogleSignout onClick={this.onSignOut}/>;
+        button = (
+          <div>
+            <GoogleSignout onClick={this.onSignOut}/>
+            <NewBlogButton />
+          </div>
+        );
       }
       return (
         <div id="signin-out" className="center-block">
@@ -444,10 +468,27 @@
   }
   window.myLib.components.SignInOut = SignInOut;
   
-}(myLib.React , myLib.components.GoogleSignin , myLib.components.GoogleSignout , myLib.aapi , gapi));
+}(myLib.React , myLib.components.GoogleSignin , myLib.components.GoogleSignout , myLib.components.NewBlogButton , myLib.aapi , gapi));
 (function(BlogPagination , ActivityBox , SignInOut , aapi , React) {
   'use strict';
   var Body = React.createClass({
+    getInitialState : function() {
+      return {
+        data : []
+      };
+    },
+    componentDidMount : function() {
+      aapi
+        .blogs
+        .read(function(err , res) {
+          if (err) throw err;
+          if (res.code === 200) {
+            this.setState({
+              data : res.data
+            })
+          }
+        }.bind(this));
+    },
     render : function() {
       return (
         <div className="row" id="body-container">
@@ -464,17 +505,14 @@
               </div>
               <div className="col-md-12 col-sm-8">
                 <div id="activity-box"> 
-                  <ActivityBox data={aapi.blogs.read({
-                    offset : 0,
-                    limit : 3
-                  })} />
+                  <ActivityBox data={this.state.data.slice(0 , 3)} />
                 </div>
               </div>
             </div>
           </div>
           <div className="col-md-7 col-md-offset-1 .col-sm-12" id="right-container">
             <div id="blog-pagination">
-              <BlogPagination data={aapi.blogs.read()}
+              <BlogPagination data={this.state.data}
                               limit={1} /> 
             </div>
           </div>
@@ -499,9 +537,16 @@
       };
     },
     componentDidMount : function() {
-      this.setState({
-        data : aapi.blogs.readById(this.getParams().id)
-      });
+      aapi
+        .blogs
+        .readById(this.getParams().id , function(err , res) {
+          if (err) throw err;
+          if (res.code === 200) {            
+            this.setState({
+              data : res.data
+            });
+          }
+        }.bind(this));
     },
     render : function() {
       var createdDate = moment(this.state.data.createdDate).format('MMMM DD, YYYY'),
@@ -537,7 +582,82 @@
   }
   window.myLib.components.Blog = Blog;
 }(myLib.React , myLib.Router , myLib.aapi , myLib.Router.Link , myLib.moment));
-(function(React , Header , Body , Footer , Router , Blog) {
+(function(React , Link , aapi) {
+  'use strict';
+  var NewBlog = React.createClass({
+    validateForm : function() {
+      var name = this.refs.name.getDOMNode().value.trim(),
+          body = this.refs.body.getDOMNode().value.trim();
+      if (!name || !body) {
+        this.setState({
+          message : 'Name and Body required'
+        });
+      }
+      else {
+        this.setState({
+          message : ''
+        });
+        return {
+          name : name,
+          body : body
+        };
+      }
+    },
+    getInitialState : function() {
+      return {
+        message : ''
+      };
+    },
+    onSubmit : function(e) {
+      e.preventDefault();
+      var refs = this.validateForm();
+      if (refs) {
+        aapi
+          .blogs
+          .create(refs , function(err , res) {
+            if (err) throw err;
+            if (res.code === 200) {
+              console.log('Show user a new blog was created!')
+            }
+          });
+      }
+    },
+    onInputChange : function(e) {
+      this.validateForm();
+    },
+    render : function() {
+      return (
+        <div id="new-blog" className="container">
+          <div id="back-to-index">
+            <Link to="home">Home</Link>
+          </div>
+          <h3>New blog</h3>
+          <form onSubmit={this.onSubmit}>
+            <div className="form-group">
+              <label for="blog-name">Name</label>
+              <input id="blog-name" type="text" className="form-control" placeholder="Your new blog name!" ref="name" onChange={this.onInputChange}/>
+            </div>
+            <div className="form-group">
+              <label for="blog-body">Body</label>
+              <textarea className="form-control" rows="50" id="blog-body" ref="body" onChange={this.onInputChange}></textarea>
+            </div>
+            <button type="submit" className="btn btn-success">Create</button>
+            <div id="error-message">
+              <p>{this.state.message}</p>
+            </div>
+          </form>
+        </div>
+      );
+    }
+  });
+  
+  if (!window.myLib.components) {
+    window.myLib.components = {};
+  }
+  window.myLib.components.NewBlog = NewBlog;
+  
+}(myLib.React , myLib.Router.Link , myLib.aapi));
+(function(React , Header , Body , Footer , Router , Blog , NewBlog) {
   'use strict';
   var RouteHandler = Router.RouteHandler,
       DefaultRoute = Router.DefaultRoute,
@@ -557,6 +677,7 @@
   
   var routes = (
     <Route name="home" path="/" handler={App}>
+      <Route name="new" path="/blogs/new" handler={NewBlog} />
       <Route name="blog" path="/blogs/:id" handler={Blog} />
       <DefaultRoute handler={Body} />
     </Route>
@@ -565,4 +686,4 @@
   Router.run(routes , function(Handler) {
     React.render(<Handler /> , document.getElementById('main-app'));
   });
-}(myLib.React , myLib.components.Header , myLib.components.Body , myLib.components.Footer , myLib.Router , myLib.components.Blog));
+}(myLib.React , myLib.components.Header , myLib.components.Body , myLib.components.Footer , myLib.Router , myLib.components.Blog , myLib.components.NewBlog));

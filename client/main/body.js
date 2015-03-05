@@ -1,6 +1,23 @@
 (function(BlogPagination , ActivityBox , SignInOut , aapi , React) {
   'use strict';
   var Body = React.createClass({
+    getInitialState : function() {
+      return {
+        data : []
+      };
+    },
+    componentDidMount : function() {
+      aapi
+        .blogs
+        .read(function(err , res) {
+          if (err) throw err;
+          if (res.code === 200) {
+            this.setState({
+              data : res.data
+            })
+          }
+        }.bind(this));
+    },
     render : function() {
       return (
         <div className="row" id="body-container">
@@ -17,17 +34,14 @@
               </div>
               <div className="col-md-12 col-sm-8">
                 <div id="activity-box"> 
-                  <ActivityBox data={aapi.blogs.read({
-                    offset : 0,
-                    limit : 3
-                  })} />
+                  <ActivityBox data={this.state.data.slice(0 , 3)} />
                 </div>
               </div>
             </div>
           </div>
           <div className="col-md-7 col-md-offset-1 .col-sm-12" id="right-container">
             <div id="blog-pagination">
-              <BlogPagination data={aapi.blogs.read()}
+              <BlogPagination data={this.state.data}
                               limit={1} /> 
             </div>
           </div>

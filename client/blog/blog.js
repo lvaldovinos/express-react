@@ -8,9 +8,16 @@
       };
     },
     componentDidMount : function() {
-      this.setState({
-        data : aapi.blogs.readById(this.getParams().id)
-      });
+      aapi
+        .blogs
+        .readById(this.getParams().id , function(err , res) {
+          if (err) throw err;
+          if (res.code === 200) {            
+            this.setState({
+              data : res.data
+            });
+          }
+        }.bind(this));
     },
     render : function() {
       var createdDate = moment(this.state.data.createdDate).format('MMMM DD, YYYY'),

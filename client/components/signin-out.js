@@ -1,4 +1,4 @@
-(function(React , GoogleSignin , GoogleSignout , aapi , gapi) {
+(function(React , GoogleSignin , GoogleSignout , NewBlogButton , aapi , gapi) {
   'use strict';
   var SignInOut = React.createClass({
     getInitialState : function() {
@@ -21,7 +21,8 @@
               //create new token on alonso.thoughtapi
               aapi
                 .tokens
-                .create(authResult['token_type'] + ' ' + authResult['access_token'] , function(res) {
+                .create(authResult['token_type'] + ' ' + authResult['access_token'] , function(err , res) {
+                  if (err) throw err;
                   if (res.code === 200) {
                     this.setState({
                       aux : aapi.tokens.isAlonsoLoggedIn()
@@ -40,7 +41,8 @@
       if (gapi.isReady) {
         aapi
           .tokens
-          .delete(function(res) {
+          .delete(function(err , res) {
+            if (err) throw err;
             if (res.code === 200) {
               this.setState({
                 aux : aapi.tokens.isAlonsoLoggedIn()
@@ -55,7 +57,12 @@
     render : function() {
       var button = <GoogleSignin onClick={this.onSignIn}/>;
       if (this.state.aux) {
-        button = <GoogleSignout onClick={this.onSignOut}/>;
+        button = (
+          <div>
+            <GoogleSignout onClick={this.onSignOut}/>
+            <NewBlogButton />
+          </div>
+        );
       }
       return (
         <div id="signin-out" className="center-block">
@@ -70,4 +77,4 @@
   }
   window.myLib.components.SignInOut = SignInOut;
   
-}(myLib.React , myLib.components.GoogleSignin , myLib.components.GoogleSignout , myLib.aapi , gapi));
+}(myLib.React , myLib.components.GoogleSignin , myLib.components.GoogleSignout , myLib.components.NewBlogButton , myLib.aapi , gapi));

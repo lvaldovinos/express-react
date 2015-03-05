@@ -23,7 +23,7 @@ gulp.task('browserify' , function() {
 });
 
 gulp.task('concat-scripts' , function() {
-  return gulp.src(['./client/components/*.js' , './client/main/*.js' , './client/blog/*.js' , './client/app.js'])
+return gulp.src(['./client/components/*.js' , './client/main/*.js' , './client/blog/*.js' , './client/new/*.js' , './client/app.js'])
     .pipe(concat('alonso-client.js'))
     .pipe(gulp.dest('./client/concat/'));
 });

@@ -29,7 +29,7 @@
     render : function() {
       var shortenBlogs = this.props.data.map(function(blog) {
         return (
-          <ShortBlog name={blog.name} createdDate={blog.createdDate} id={blog._id}>
+          <ShortBlog name={blog.name} createdDate={blog.createdDate} id={blog._id} key={blog._id}>
             {blog.shortBody}
           </ShortBlog>
         );
