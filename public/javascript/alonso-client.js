@@ -469,6 +469,45 @@
   window.myLib.components.SignInOut = SignInOut;
   
 }(myLib.React , myLib.components.GoogleSignin , myLib.components.GoogleSignout , myLib.components.NewBlogButton , myLib.aapi , gapi));
+(function(React , aapi) {
+  'use strict';
+  var UpdateDelete = React.createClass({displayName: "UpdateDelete",
+    getInitialState : function() {
+      return {
+        aux : aapi.tokens.isAlonsoLoggedIn()
+      };
+    },
+    componentDidMount : function() {
+      this.setState({
+        aux : aapi.tokens.isAlonsoLoggedIn()
+      });
+    },
+    onEdit : function(e) {
+      console.log('Edit!!');
+    },
+    onDelete : function(e) {
+      console.log('Delete!');
+    },
+    render : function() {
+      var klass = 'hidden';
+      if (this.state.aux) {
+        klass = 'show';
+      }
+      return (
+        React.createElement("div", {id: "update-delete", className: klass}, 
+          React.createElement("i", {className: "fa fa-pencil-square-o fa-2x", onClick: this.onEdit}), 
+          React.createElement("i", {className: "fa fa-times fa-2x", onClick: this.onDelete})
+        )
+      );
+    }
+  });
+  
+  
+  if (!window.myLib.components) {
+    window.myLib.components = {};
+  }
+  window.myLib.components.UpdateDelete = UpdateDelete;
+}(myLib.React , myLib.aapi));
 (function(BlogPagination , ActivityBox , SignInOut , aapi , React) {
   'use strict';
   var Body = React.createClass({displayName: "Body",
@@ -527,7 +566,7 @@
   window.myLib.components.Body = Body;
   
 }(myLib.components.BlogPagination , myLib.components.ActivityBox , myLib.components.SignInOut , myLib.aapi , myLib.React));
-(function(React , Router , aapi , Link , moment) {
+(function(React , Router , aapi , Link , moment , UpdateDelete) {
   'use strict';
   var Blog = React.createClass({displayName: "Blog",
     mixins : [Router.State],
@@ -550,7 +589,8 @@
     },
     render : function() {
       var createdDate = moment(this.state.data.createdDate).format('MMMM DD, YYYY'),
-          updatedDate = moment(this.state.data.updatedDate).format('MMMM DD, YYYY'); 
+          updatedDate = moment(this.state.data.updatedDate).format('MMMM DD, YYYY');
+      
       return (
         React.createElement("div", {className: "container"}, 
           React.createElement("div", {id: "back-to-index"}, 
@@ -558,7 +598,8 @@
           ), 
           React.createElement("div", {id: "specific-blog"}, 
             React.createElement("div", {className: "row blog-name"}, 
-              React.createElement("h1", null, this.state.data.name)
+              React.createElement("h1", null, this.state.data.name), 
+              React.createElement(UpdateDelete, null)
             ), 
             React.createElement("div", {className: "row blog-date"}, 
               React.createElement("div", {className: "pull-left"}, 
@@ -581,7 +622,7 @@
     window.myLib.components = {};
   }
   window.myLib.components.Blog = Blog;
-}(myLib.React , myLib.Router , myLib.aapi , myLib.Router.Link , myLib.moment));
+}(myLib.React , myLib.Router , myLib.aapi , myLib.Router.Link , myLib.moment , myLib.components.UpdateDelete));
 (function(React , Link , aapi) {
   'use strict';
   var NewBlog = React.createClass({displayName: "NewBlog",

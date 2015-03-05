@@ -1,4 +1,4 @@
-(function(React , Router , aapi , Link , moment) {
+(function(React , Router , aapi , Link , moment , UpdateDelete) {
   'use strict';
   var Blog = React.createClass({
     mixins : [Router.State],
@@ -21,7 +21,8 @@
     },
     render : function() {
       var createdDate = moment(this.state.data.createdDate).format('MMMM DD, YYYY'),
-          updatedDate = moment(this.state.data.updatedDate).format('MMMM DD, YYYY'); 
+          updatedDate = moment(this.state.data.updatedDate).format('MMMM DD, YYYY');
+      
       return (
         <div className="container">
           <div id="back-to-index">
@@ -30,6 +31,7 @@
           <div id="specific-blog">
             <div className="row blog-name">
               <h1>{this.state.data.name}</h1>
+              <UpdateDelete />
             </div>
             <div className="row blog-date">
               <div className="pull-left">
@@ -52,4 +54,4 @@
     window.myLib.components = {};
   }
   window.myLib.components.Blog = Blog;
-}(myLib.React , myLib.Router , myLib.aapi , myLib.Router.Link , myLib.moment));
+}(myLib.React , myLib.Router , myLib.aapi , myLib.Router.Link , myLib.moment , myLib.components.UpdateDelete));
