@@ -469,9 +469,10 @@
   window.myLib.components.SignInOut = SignInOut;
   
 }(myLib.React , myLib.components.GoogleSignin , myLib.components.GoogleSignout , myLib.components.NewBlogButton , myLib.aapi , gapi));
-(function(React , aapi) {
+(function(React , aapi , Navigation) {
   'use strict';
   var UpdateDelete = React.createClass({
+    mixins : [Navigation],
     getInitialState : function() {
       return {
         aux : aapi.tokens.isAlonsoLoggedIn()
@@ -483,10 +484,19 @@
       });
     },
     onEdit : function(e) {
-      console.log('Edit!!');
+      console.log('Edit blog:' + this.props.id);
+      this.transitionTo('new');
     },
     onDelete : function(e) {
-      console.log('Delete!');
+      console.log('Delete blog:' + this.props.id);
+      aapi
+        .blogs
+        .delete(this.props.id , function(err , res) {
+          if (err) throw err;
+          if (res.code === 200) {
+            this.transitionTo('home');
+          }
+        }.bind(this));
     },
     render : function() {
       var klass = 'hidden';
@@ -507,7 +517,7 @@
     window.myLib.components = {};
   }
   window.myLib.components.UpdateDelete = UpdateDelete;
-}(myLib.React , myLib.aapi));
+}(myLib.React , myLib.aapi , myLib.Router.Navigation));
 (function(BlogPagination , ActivityBox , SignInOut , aapi , React) {
   'use strict';
   var Body = React.createClass({
@@ -599,7 +609,7 @@
           <div id="specific-blog">
             <div className="row blog-name">
               <h1>{this.state.data.name}</h1>
-              <UpdateDelete />
+              <UpdateDelete id={this.state.data._id}/>
             </div>
             <div className="row blog-date">
               <div className="pull-left">

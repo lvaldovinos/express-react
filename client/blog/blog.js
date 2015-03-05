@@ -31,7 +31,7 @@
           <div id="specific-blog">
             <div className="row blog-name">
               <h1>{this.state.data.name}</h1>
-              <UpdateDelete />
+              <UpdateDelete id={this.state.data._id}/>
             </div>
             <div className="row blog-date">
               <div className="pull-left">

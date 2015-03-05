@@ -31,6 +31,15 @@ aapi.blogs = {
         cb(null , body);
       });
   },
+  delete : function(id , cb) {
+    myRequest
+      .delete('/blogs/' + id)
+      .end(function(err , res) {
+        if (err) return cb(err);
+        var body = res.body;
+        cb(null , body);
+      });
+  },
   create : function(spec , cb) {
     myRequest
       .post('/blogs')

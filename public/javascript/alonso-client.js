@@ -469,9 +469,10 @@
   window.myLib.components.SignInOut = SignInOut;
   
 }(myLib.React , myLib.components.GoogleSignin , myLib.components.GoogleSignout , myLib.components.NewBlogButton , myLib.aapi , gapi));
-(function(React , aapi) {
+(function(React , aapi , Navigation) {
   'use strict';
   var UpdateDelete = React.createClass({displayName: "UpdateDelete",
+    mixins : [Navigation],
     getInitialState : function() {
       return {
         aux : aapi.tokens.isAlonsoLoggedIn()
@@ -483,10 +484,19 @@
       });
     },
     onEdit : function(e) {
-      console.log('Edit!!');
+      console.log('Edit blog:' + this.props.id);
+      this.transitionTo('new');
     },
     onDelete : function(e) {
-      console.log('Delete!');
+      console.log('Delete blog:' + this.props.id);
+      aapi
+        .blogs
+        .delete(this.props.id , function(err , res) {
+          if (err) throw err;
+          if (res.code === 200) {
+            this.transitionTo('home');
+          }
+        }.bind(this));
     },
     render : function() {
       var klass = 'hidden';
@@ -507,7 +517,7 @@
     window.myLib.components = {};
   }
   window.myLib.components.UpdateDelete = UpdateDelete;
-}(myLib.React , myLib.aapi));
+}(myLib.React , myLib.aapi , myLib.Router.Navigation));
 (function(BlogPagination , ActivityBox , SignInOut , aapi , React) {
   'use strict';
   var Body = React.createClass({displayName: "Body",
@@ -599,7 +609,7 @@
           React.createElement("div", {id: "specific-blog"}, 
             React.createElement("div", {className: "row blog-name"}, 
               React.createElement("h1", null, this.state.data.name), 
-              React.createElement(UpdateDelete, null)
+              React.createElement(UpdateDelete, {id: this.state.data._id})
             ), 
             React.createElement("div", {className: "row blog-date"}, 
               React.createElement("div", {className: "pull-left"}, 
